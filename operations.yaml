@@ -1,0 +1,16 @@
+---
+say_hello_default:
+  command: "echo Hello ${salutation}.${name}!"
+  tags: "dummy,startingkit"
+
+say_hello_in_bash:
+  command: "bash bin/greet.sh salutation=${salutation} name=${name} lang=bash"
+  tags: "dummy,startingkit"
+
+say_hello_in_python:
+  command: "python3 bin/greet.py --salutation ${salutation} --name ${name} --lang python"
+  tags: "dummy,startingkit"
+
+say_hello_in_python:
+  command: "python3 bin/greet.py --salutation ${salutation} --name ${name} --lang python"
+  tags: "dummy,startingkit"

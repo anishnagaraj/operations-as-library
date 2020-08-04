@@ -1,0 +1,45 @@
+image: azuresdk/azure-cli-python
+
+stages:
+  - check
+  - build_deploy
+
+is_framework_fit:
+  stage: check
+  before_script:
+    - pip install -r requirements.txt
+  script:
+  - (cd framework-fitness && python3 isOperationsConfigFit.py)
+  only:
+    refs:
+    - master
+    - tags
+
+
+release_build_deploy:
+  stage: build_deploy
+  script:
+  - rm -rf .git && cd ..
+  - tar -cvf essp-operations-$CI_COMMIT_TAG.tar.gz essp-operations
+  - export chksum=$(md5sum essp-operations-$CI_COMMIT_TAG.tar.gz | awk '{print $1}')
+  - echo chksum
+  - curl --fail --header "X-Checksum-MD5:${chksum}" -X PUT -u ${ARTIFACTORY_USER}:${ARTIFACTORY_APIKEY} -T essp-operations-$CI_COMMIT_TAG.tar.gz "https://repo.eon-cds.de/artifactory/libs-release-local/essp-operations/$CI_COMMIT_TAG/essp-operations-$CI_COMMIT_TAG.tar.gz"
+  only:
+    refs:
+    - tags
+
+
+snapshot_build_deploy:
+  stage: build_deploy
+  script:
+  - rm -rf .git && cd ..
+  - if [ -z "$snapshot_suffix" ]; then echo "Setting snapshot_suffix" && export snapshot_suffix=$CI_COMMIT_REF_NAME; else echo "Snapshot suffix you preferred is $snapshot_suffix";fi
+  - echo ">>>>> snapshot_suffix is $snapshot_suffix"
+  - tar -cvf essp-operations-$snapshot_suffix.tar.gz essp-operations
+  - export chksum=$(md5sum essp-operations-$snapshot_suffix.tar.gz | awk '{print $1}')
+  - echo chksum
+  - export todays_date=$(date +'%m%d%Y')
+  - curl --fail --header "X-Checksum-MD5:${chksum}" -X PUT -u ${ARTIFACTORY_USER}:${ARTIFACTORY_APIKEY} -T essp-operations-$snapshot_suffix.tar.gz "https://repo.eon-cds.de/artifactory/libs-snapshot-local/essp-operations/$todays_date/essp-operations-$snapshot_suffix.tar.gz"
+  only:
+    refs:
+    - branches

@@ -1,0 +1,8 @@
+---
+supported_operations:
+  - say_hello_default
+  - say_hello_in_bash
+  - say_hello_in_python
+
+
+supported_operations_count: 3
