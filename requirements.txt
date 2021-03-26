@@ -1,5 +1,5 @@
 strictyaml==1.0.1
 forked_path==0.2.3
-PyYAML==5.1.1
+PyYAML==5.4
 path.py==12.0.1
 django==2.2.13
